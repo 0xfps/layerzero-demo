@@ -15,7 +15,7 @@ import "hardhat/console.sol";
  *      This Sender contract will send to the Receiver contract, and will in turn
  *      receive whatever the Receiver contract sent.
  *
- *      0x63D20e6810927977aE7c16DD8f3b5F7f319EDF7C.
+ *      Goerli: 0x3ACc9B365aB90742659161Cc10e40E6DD664147F.
  */
 
 contract Sender is ILayerZeroReceiver {
@@ -33,6 +33,10 @@ contract Sender is ILayerZeroReceiver {
 
     constructor(address _endpoint) {
         endpoint = ILayerZeroEndpoint(_endpoint);
+    }
+
+    function name() public pure returns (string memory) {
+        return "Sender";
     }
 
     function getCounts() public view returns (uint256, uint256) {
@@ -83,5 +87,22 @@ contract Sender is ILayerZeroReceiver {
         message.push(_payload);
         receivedMessageCount += 1;
         emit ReceiveMsg(_srcChainId, from, receivedMessageCount, _payload);
+    }
+
+    function estimateFees(
+        uint16 _dstChainId,
+        address _userApplication,
+        bytes calldata _payload,
+        bool _payInZRO,
+        bytes calldata _adapterParams
+    ) external view returns (uint256 nativeFee, uint256 zroFee) {
+        return
+            endpoint.estimateFees(
+                _dstChainId,
+                _userApplication,
+                _payload,
+                _payInZRO,
+                _adapterParams
+            );
     }
 }

@@ -12,7 +12,7 @@ import "hardhat/console.sol";
  *      destination chain.In order to use it, we need to import the interface 
  *      from LayerZero repository.
  *
- *      0x143577C18586c96EDB680063FAFFAcb1F93Bff81.
+ *      Sepolia: 0x98Ec13F3368C7256c7DEbAE9DD1ebB8DB6648B5C.
  */
 
 contract Receiver is ILayerZeroReceiver {
@@ -30,6 +30,10 @@ contract Receiver is ILayerZeroReceiver {
 
     constructor(address _endpoint) {
         endpoint = ILayerZeroEndpoint(_endpoint);
+    }
+
+    function name() public pure returns (string memory) {
+        return "Receiver";
     }
 
     function getCounts() public view returns (uint256, uint256) {
@@ -80,5 +84,22 @@ contract Receiver is ILayerZeroReceiver {
         message.push(_payload);
         receivedMessageCount += 1;
         emit ReceiveMsg(_srcChainId, from, receivedMessageCount, _payload);
+    }
+
+    function estimateFees(
+        uint16 _dstChainId,
+        address _userApplication,
+        bytes calldata _payload,
+        bool _payInZRO,
+        bytes calldata _adapterParams
+    ) external view returns (uint256 nativeFee, uint256 zroFee) {
+        return
+            endpoint.estimateFees(
+                _dstChainId,
+                _userApplication,
+                _payload,
+                _payInZRO,
+                _adapterParams
+            );
     }
 }
